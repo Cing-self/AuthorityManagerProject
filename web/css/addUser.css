@@ -1,0 +1,22 @@
+.wrapper{
+    margin: 50px auto;
+    width: 500px;
+    padding: 10px;
+    background: #eeeeee;
+    border: 1px solid #a7c4c9;
+    border-radius: 5%;
+}
+
+.wrapper input.txt{
+    width: 250px;
+    height: 30px;
+}
+
+.wrapper tr{
+    height: 40px;
+}
+
+.wrapper button{
+    width: 60px;
+    height: 40px;
+}

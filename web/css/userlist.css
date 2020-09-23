@@ -1,0 +1,33 @@
+ul,li{
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+.btnBox{
+    margin-left:10%;
+}
+.btnBox li{
+    float:left;
+    margin-right:8px;
+    margin-bottom:8px;
+}
+.btnBox input{
+    width:100px;
+}
+
+.pageBox{
+    float:right;
+    margin-right:10%;
+    margin-top:10px;
+}
+.pageBox li{
+    float:left;
+    margin-left:8px;
+
+}
+
+.modal tr{
+    height: 40px;
+}
+
+
