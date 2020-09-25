@@ -38,6 +38,7 @@
             background: #a7c4c9;
         }
     </style>
+    <script src="js/jquery.js"></script>
     <script>
         window.onload = function() {
             loadData();
@@ -335,6 +336,16 @@
             }
 
         }
+
+        $(function(){
+           $.get("userBtn.do", {}, function (buttons) {
+               $('[url]').hide(0);
+               for (var i = 0; i < buttons.length; i ++){
+                   var button = buttons[i];
+                   $('[url="' + button.fhref + '"]').show(0);
+               }
+            }, 'json');
+        });
     </script>
 </head>
 <body>
@@ -344,7 +355,7 @@
             <li>
                 <button id="rootBtn">新建主功能</button>
                 <button id="childBtn">新建子功能</button>
-                <button id="deleteBtn">删除功能</button>
+                <button url="deleteUser.do" id="deleteBtn">删除功能</button>
                 <button id="editBtn">编辑功能</button>
             </li>
         </ul>

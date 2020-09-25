@@ -46,6 +46,7 @@
             $.ajax({
                 url: 'findAllFn.do',
                 data: {},
+                async: false,
                 type: 'get',
                 success: function (fnList) {
                     showLevelFnList(fnList, $('#menuBox'));
@@ -138,20 +139,29 @@
                 },
                 dataType: 'json'
             });
-
-            $(function () {
-                $('#saveBtn').click(function () {
-                    var rno = $('#rno').val();
-                    var fnos = '';
-                    $('#menuBox input:checked').each(function (i, input) {
-                        fnos += $(input).val() + ',';
-                    });
-                    $.post('assignFns.do',{'rno':rno,'fnos':fnos}, function (result) {
-                        alert(result);
-                    });
+        });
+        $(function () {
+            $('#saveBtn').click(function () {
+                var rno = $('#rno').val();
+                var fnos = '';
+                $('#menuBox input:checked').each(function (i, input) {
+                    fnos += $(input).val() + ',';
+                });
+                $.post('assignFns.do',{'rno':rno,'fnos':fnos}, function (result) {
+                    console.log(fnos);
+                    alert(result);
                 });
             });
+        });
 
+        $(function () {
+            //查询当前角色之前分配的功能，并默认勾选
+            $.post('linkFns.do', {'rno':$('#rno').val()}, function (fnos) {
+                for (var i = 0; i < fnos.length; i ++){
+                    var fno = fnos[i];
+                    $('input[value=' + fno + ']').prop('checked', true);
+                }
+            }, 'json');
         });
     </script>
 </head>

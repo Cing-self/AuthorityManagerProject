@@ -1,7 +1,9 @@
 package com.controller;
 
+import com.domain.Fn;
 import com.domain.PageInfo;
 import com.domain.User;
+import com.service.FnService;
 import com.service.UserService;
 import com.util.ExcelUtil;
 import com.util.MySpring;
@@ -18,20 +20,19 @@ import springmvc.annotation.SessionAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-@SessionAttributes("loginUser")
+@SessionAttributes({"loginUser", "userMenu", "userBtn", "fns", "userFns"})
 public class UserController {
 
-    private UserService service = MySpring.getBean("com.service.impl.UserServiceImpl");
+    private UserService userService = MySpring.getBean("com.service.impl.UserServiceImpl");
+    private FnService fnService = MySpring.getBean("com.service.impl.FnServiceImpl");
 
     @RequestMapping("login.do")
-    public ModelAndView login(@RequestParam("uname") String uname, @RequestParam("upass") String upass){
-        User user = service.checkLogin(uname, upass);
+    public ModelAndView login(@RequestParam("uname") String uname, @RequestParam("upass") String upass, HttpServletRequest request){
+        User user = userService.checkLogin(uname, upass);
         if (user == null){
             //登录失败
             ModelAndView modelAndView = new ModelAndView();
@@ -43,6 +44,23 @@ public class UserController {
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName(responeContext);
             modelAndView.addAttribute("loginUser", user);
+
+            //查询该用户的所有权限
+            //查找用户的菜单功能
+            List<Fn> userMenu = fnService.findUserMenu(user.getUno());
+            //查找用的按钮功能
+            List<Fn> userBtn = fnService.findUserBtn(user.getUno());
+            modelAndView.addAttribute("userMenu", userMenu);
+            modelAndView.addAttribute("userBtn", userBtn);
+
+            //查找所有功能
+            List<Fn> fns = fnService.findBaseAll();
+            modelAndView.addAttribute("fns", fns);
+
+            //查找用户的所有功能
+            List<Fn> userFns = fnService.findFnsByUser(user.getUno());
+            modelAndView.addAttribute("userFns", userFns);
+
             return modelAndView;
         }
     }
@@ -51,7 +69,7 @@ public class UserController {
     @RequestMapping("getUserList.do")
     public ModelAndView getUserList(@RequestParam("uno") Integer uno, @RequestParam("uname")String uname,
                             @RequestParam("sex") String sex, @RequestParam("page") Integer page,
-                            @RequestParam("row") Integer row){
+                            @RequestParam("row") Integer row, HttpServletRequest request){
         if (page == null && row == null){
             //没有传递page，应该是菜单访问，默认访问第一页
             page = 1;
@@ -64,7 +82,7 @@ public class UserController {
         paramBox.put("page", page);
         paramBox.put("row", row);
 
-        PageInfo info = service.findUserByPageAndFilter(paramBox);
+        PageInfo info = userService.findUserByPageAndFilter(paramBox);
 
         ModelAndView mv = new ModelAndView();
         mv.setViewName("userList.jsp");
@@ -80,19 +98,19 @@ public class UserController {
 
     @RequestMapping("addUser.do")
     public String addUser(User user){
-        service.saveUser(user);
+        userService.saveUser(user);
         return "redirect:getUserList.do";
     }
 
     @RequestMapping("userDelete.do")
     public String userDelete(@RequestParam("uno") Integer uno){
-        service.deleteUser(uno);
+        userService.deleteUser(uno);
         return "redirect:getUserList.do";
     }
 
     @RequestMapping("editUser.do")
     public ModelAndView editUser(@RequestParam("uno") Integer uno){
-        User user = service.findUserById(uno);
+        User user = userService.findUserById(uno);
         ModelAndView mv = new ModelAndView();
         mv.setViewName("userEdit.jsp");
         mv.addAttribute("user", user);
@@ -101,13 +119,13 @@ public class UserController {
 
     @RequestMapping("userUpdate.do")
     public String userUpdate(User user){
-        service.updateUser(user);
+        userService.updateUser(user);
         return "redirect:getUserList.do";
     }
 
     @RequestMapping("userDeletes.do")
     public String userDeletes(@RequestParam("unoStr") String unoStr){
-        service.deleteUserList(unoStr);
+        userService.deleteUserList(unoStr);
         return "redirect:getUserList.do";
     }
 
@@ -147,7 +165,7 @@ public class UserController {
                 userList.add(user);
             }
 
-            service.importUserList(userList);
+            userService.importUserList(userList);
         } catch (FileUploadException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -186,7 +204,7 @@ public class UserController {
 
     @RequestMapping("exportUser.do")
     public void exportUser(HttpServletResponse response){
-        List<User> userList = service.exportUserList();
+        List<User> userList = userService.exportUserList();
         String[] headerName = {"用户编号","用户名称","真实姓名","用户性别","用户年龄"};
         try {
             //生成excel文件对象
@@ -238,7 +256,7 @@ public class UserController {
             return "原密码不正确";
         }
         user.setUpass(newpass);
-        service.modifyPwd(user.getUno(), user.getUpass());
+        userService.modifyPwd(user.getUno(), user.getUpass());
 
         return "密码修改成功";
     }

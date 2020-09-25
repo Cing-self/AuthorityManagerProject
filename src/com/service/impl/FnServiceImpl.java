@@ -5,8 +5,7 @@ import com.domain.Fn;
 import com.service.FnService;
 import orm.SqlSession;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class FnServiceImpl implements FnService {
 
@@ -53,4 +52,46 @@ public class FnServiceImpl implements FnService {
     public void updateFn(Fn fn) {
         fnDao.updateFn(fn);
     }
+
+    //分配功能
+    @Override
+    public void assignFns(Integer rno, String fnos) {
+        fnDao.removeRelationshipByRole(rno);
+
+        String[] fnoArray = fnos.split(",");
+        for (String fno : fnoArray){
+            Map<String, Object> map = new HashMap<>();
+            map.put("rno", rno);
+            map.put("fno", fno);
+            fnDao.addRelationshipForRole(map);
+        }
+    }
+
+    @Override
+    public List<Integer> findLinkFns(Integer rno) {
+        return fnDao.findLinkFns(rno);
+    }
+
+    @Override
+    public List<Fn> findUserMenu(Integer uno) {
+        List<Fn> fns = fnDao.findMenuByUser(uno);
+        return reBuildFn(fns, -1);
+    }
+
+    @Override
+    public List<Fn> findUserBtn(Integer uno) {
+        return fnDao.findBtnByUser(uno);
+    }
+
+    @Override
+    public List<Fn> findBaseAll() {
+        return fnDao.findAll();
+    }
+
+    @Override
+    public List<Fn> findFnsByUser(int uno) {
+        return fnDao.findFnsByUser(uno);
+    }
+
+
 }

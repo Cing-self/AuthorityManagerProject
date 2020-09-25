@@ -1,5 +1,6 @@
 package com.dao;
 
+import com.domain.Fn;
 import com.domain.User;
 
 import java.util.List;
@@ -24,5 +25,6 @@ public interface UserDao {
     public List<User> findAll();
 
     public void modifyPwd(Integer uno, String newpass);
+
 }
 

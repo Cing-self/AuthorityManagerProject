@@ -45,8 +45,10 @@
 
             //新建用户按钮
             var addBtn = document.getElementById("addBtn");
-            addBtn.onclick = function () {
-                location.href="addUser.jsp";
+            if (addBtn){
+                addBtn.onclick = function () {
+                    location.href="addUser.jsp";
+                }
             }
 
             //为清空查询增加点击事件
@@ -111,25 +113,28 @@
 
             //批量删除事件
             var deletesBtn = document.getElementById("deletesBtn");
-            deletesBtn.onclick = function () {
-                var unoStr = '';//存储所有被选中的用户编号，使用逗号隔开
-                var unos = document.getElementsByClassName("unoChecked");
+            if (deletesBtn){
+                deletesBtn.onclick = function () {
+                    var unoStr = '';//存储所有被选中的用户编号，使用逗号隔开
+                    var unos = document.getElementsByClassName("unoChecked");
 
-                for (var i = 0; i < unos.length; i ++){
-                    console.log(unos[i] + "--" + unos[i].checked);
-                    if (unos[i].checked == true){
-                        unoStr += unos[i].value + ',';
+                    for (var i = 0; i < unos.length; i ++){
+                        console.log(unos[i] + "--" + unos[i].checked);
+                        if (unos[i].checked == true){
+                            unoStr += unos[i].value + ',';
+                        }
                     }
+                    if (unoStr.length == 0){
+                        alert('请选择要删除的记录');
+                        return;
+                    }
+                    var f = confirm('是否确认删除' + unoStr);
+                    if (f == false)
+                        return;
+                    location.href = 'userDeletes.do?unoStr=' + unoStr;
                 }
-                if (unoStr.length == 0){
-                    alert('请选择要删除的记录');
-                    return;
-                }
-                var f = confirm('是否确认删除' + unoStr);
-                if (f == false)
-                    return;
-                location.href = 'userDeletes.do?unoStr=' + unoStr;
             }
+
 
             //导入用户
             var importBtn = document.getElementById("importBtn");
@@ -156,6 +161,7 @@
             exportBtn.onclick = function () {
                 location.href = "exportUser.do";
             }
+
         }
 
         //用户删除事件
@@ -180,7 +186,6 @@
 
             location.href = 'getUserList.do?uno=' + uno + '&uname=' + uname + '&sex=' + sex + '&page=' + page +
                 "&row=" + row;
-
         }
 
     </script>
@@ -204,8 +209,16 @@
     </li>
     <li><button type="button" id="queryBtn">查询</button></li>
     <li><button type="button" id="clearBtn">清空查询</button></li>
-    <li><button type="button" id="addBtn">新建用户</button></li>
-    <li><button type="button" id="deletesBtn">批量删除</button></li>
+    <c:forEach items="${sessionScope.userBtn}" var="fn">
+        <c:if test="${fn.fhref == 'addUser.jsp'}">
+            <li><button type="button" id="addBtn">新建用户</button> </li>
+        </c:if>
+    </c:forEach>
+    <c:forEach items= "${sessionScope.userBtn}" var= "fn">
+        <c:if test="${fn.fhref == 'userDeleteByGroup.do'}">
+            <li><button type="button" id="deletesBtn">批量删除</button> </li>
+        </c:if>
+    </c:forEach>
     <li><button type="button" id="importBtn">批量导入</button></li>
     <li><button type="button" id="exportBtn">批量导出</button></li>
 </ul>
@@ -238,8 +251,16 @@
                     <td>${user.age}</td>
                     <td>${user.sex}</td>
                     <td>
-                        <a href="javascript:editUser(${user.uno})">编辑</a> |
-                        <a href="javascript:toDelete(${user.uno})">删除</a>
+                        <c:forEach items="${sessionScope.userBtn}" var="fn">
+                            <c:if test="${fn.fhref == 'editUser.do'}">
+                                <a href="javascript:editUser(${user.uno})">编辑</a> |
+                            </c:if>
+                        </c:forEach>
+                        <c:forEach items="${sessionScope.userBtn}" var="fn">
+                            <c:if test="${fn.fhref == 'deleteUser.do'}">
+                                <a href="javascript:toDelete(${user.uno})">删除</a>
+                            </c:if>
+                        </c:forEach>
                         <a href="assignRoles.jsp?uno=${user.uno}&uname=${user.realname}">分配角色</a>
                     </td>
                 </tr>

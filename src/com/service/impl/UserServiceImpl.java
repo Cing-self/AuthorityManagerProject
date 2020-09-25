@@ -2,6 +2,7 @@ package com.service.impl;
 
 import com.dao.UserDao;
 import com.dao.impl.UserDaoImpl;
+import com.domain.Fn;
 import com.domain.PageInfo;
 import com.domain.User;
 import com.service.UserService;
@@ -93,5 +94,6 @@ public class UserServiceImpl implements UserService {
     public void modifyPwd(Integer uno, String newpass) {
         userDao.modifyPwd(uno, newpass);
     }
+
 
 }

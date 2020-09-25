@@ -1,5 +1,6 @@
 package com.service;
 
+import com.domain.Fn;
 import com.domain.PageInfo;
 import com.domain.User;
 
@@ -27,4 +28,5 @@ public interface UserService {
     public List<User> exportUserList();
 
     public void modifyPwd(Integer uno, String newpass);
+
 }

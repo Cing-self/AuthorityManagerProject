@@ -291,7 +291,9 @@ public class  DispatcherServlet extends HttpServlet {
             if(attributeNames.length != 0) {
                 HttpSession session = request.getSession();
                 for (String attributeName : attributeNames) {
-                    session.setAttribute(attributeName,mvMap.get(attributeName));
+                    Object value = mvMap.get(attributeName);
+                    if (value != null)
+                        session.setAttribute(attributeName, value);
                 }
             }
         }
